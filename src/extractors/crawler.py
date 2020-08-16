@@ -1,7 +1,7 @@
 import pickle
 from logging import getLogger, INFO
 
-from src.components.validators import URLValidator
+from pyframework.components.validators import URLValidator
 from pyframework.container import Container
 from scrapy import Spider, Request, signals
 

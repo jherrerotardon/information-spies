@@ -1,6 +1,7 @@
-from src.models.city import City
+from pyframework.exceptions.custom_exceptions import ArgumentException
+
 from .base_fire import BaseFire, Event
-from ...exceptions.argument_exception import ArgumentException
+from ...models.city import City
 
 
 class FireCityDownload(BaseFire):
@@ -24,11 +25,10 @@ class FireCityDownload(BaseFire):
             raise ArgumentException('No valid city ID.')
 
     def handle(self) -> int:
-
         info = {
-            'city_id': self._city
+            'place_id': self._city['id']
         }
 
-        self._fire_event(Event.CITY_DOWNLOAD, info)
+        self._fire_event(Event.PLACE_DOWNLOAD_ACTION, info)
 
         return self.RETURN_SUCCESS

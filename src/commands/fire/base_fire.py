@@ -6,13 +6,21 @@ from pyframework.providers.rabbitmq.amqp_queue import AMQPQueue
 
 
 class Event(Enum):
-    CITY_DOWNLOAD = "city.download"
+    # Actions.
+    PLACE_DOWNLOAD_ACTION = "download.place.action"
+    INFO_DOWNLOAD_ACTION = "download.info.action"
+
+    # Tasks.
+    PLACE_DOWNLOAD_TASK = "download.place.task"
+    INFO_DOWNLOAD_TASK = "download.info.task"
 
 
 class BaseFire(Command):
+    """Base class interface to fire events from commands. """
 
     @staticmethod
     def _fire_event(event: Event, body: dict):
+        """Fire an event with the params 'body'. """
         amqp = AMQPQueue()
 
         # Format data.
