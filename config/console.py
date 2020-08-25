@@ -10,9 +10,10 @@ metadata = {
         'fire:cityDownload': FireCityDownload,
 
         # Actions.
-        '': DownloadPlaceAction,
+        'download.place.ready.action': DownloadPlaceAction,
+
         # Tasks.
-        '': DownloadPlaceTask,
+        'download.place.ready.task': DownloadPlaceTask,
 
         # Py-framework commands.
         'Listen': Listen,

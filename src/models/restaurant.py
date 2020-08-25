@@ -9,10 +9,10 @@ class Column(Enum):
     ADDRESS = 'address'
     POSTAL_CODE = 'postal_code'
     STARS = 'starts'
-    URL = 'province'
+    URL = 'url'
     RANKING = 'ranking'
-    CITY = 'city'
-    ENDPOINT = 'endpoint'
+    CITY = 'city_id'
+    ENDPOINT = 'endpoint_id'
     CREATED_AT = 'created_at'
     UPDATED_AT = 'updated_at'
 

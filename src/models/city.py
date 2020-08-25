@@ -12,8 +12,7 @@ class Column(Enum):
     NAME = 'name'
     CODE = 'code'
     POPULATION = 'population'
-    TRIPADVISOR_CODE = 'tripadvisor_code'
-    PROVINCE = 'province'
+    PROVINCE = 'province_id'
     CREATED_AT = 'created_at'
     UPDATED_AT = 'updated_at'
 

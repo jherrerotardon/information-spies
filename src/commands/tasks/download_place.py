@@ -1,12 +1,14 @@
+from pyframework.commands.task import Task
 from pyframework.exceptions.custom_exceptions import InvalidDataException
 
-from pyframework.commands.task import Task
 from ...models.city import City
 from ...triggers.place_trigger import AbstractTrigger, PlaceTrigger
 
 
 class DownloadPlace(Task):
     """Concrete task to download entities (restaurants) from place. """
+
+    _name = 'download.place.ready.task'
 
     _place = None
     """Place data to be scrapped. """

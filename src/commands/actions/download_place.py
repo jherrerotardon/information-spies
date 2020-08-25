@@ -7,6 +7,8 @@ from ...triggers.place_trigger import AbstractTrigger, PlaceTrigger
 class DownloadPlace(Action):
     """Concrete action to download entities (restaurants) from place. """
 
+    _name = 'download.place.ready.action'
+
     _place_id = None
     """Place id to be scrapped. """
 

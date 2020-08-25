@@ -11,7 +11,7 @@ python-githooks = "*"
 
 [packages]
 Scrapy = "*"
-py-framework = {git = "ssh://git@github.com/jherrerotardon/py-framework.git"}
+py-framework = {git = "git+ssh://git@github.com/jherrerotardon/py-framework.git"}
 
 [requires]
 python_version = "3.8"
