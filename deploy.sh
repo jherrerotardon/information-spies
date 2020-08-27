@@ -23,4 +23,4 @@ if [[ ${APP_ENV} != 'prod' && ${APP_ENV} != 'pre' ]]; then
 fi
 
 # Install dependencies.
-export PIPENV_VENV_IN_PROJECT=true && python3 -m pipenv sync ${DEV}
+export PIPENV_VENV_IN_PROJECT=true && python3 -m pipenv update ${DEV}

@@ -14,9 +14,11 @@ class DownloadPlace(Task):
     """Place data to be scrapped. """
 
     def set_up(self):
-        place_id = self._payload.get('city_id')
+        super(DownloadPlace, self).set_up()
+
+        place_id = self._payload.get('place_id')
         if place_id:
-            self._place = City().get_city(self._payload.get('city_id'))
+            self._place = City().get_city(place_id)
 
         if not self._place:
             raise InvalidDataException('Empty place. Nothing to download.')
