@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+    python:
+        image: jherrerotardon/python:3.8
+        build:
+          context: .
+          args:
+            user: docker
+            uid: 1000
+            guid: 1000
+        container_name: information-spies
+        user: "docker"
+        working_dir: /app/information-spies
+        volumes:
+          - .:/app/information-spies:cached
+          - /etc/hosts:/etc/hosts:cached
+          - ~/.ssh/id_rsa:/home/docker/.ssh/id_rsa:ro
+          - ~/.ssh/known_hosts:/home/docker/.ssh/known_hosts
