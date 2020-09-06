@@ -1,4 +1,6 @@
 from pyframework.commands.task import Task
+from pyframework.components.guid import Guid
+from pyframework.container import Container
 from pyframework.exceptions.custom_exceptions import InvalidDataException
 
 from ...extractors.crawler import Launcher
@@ -10,7 +12,7 @@ from ...triggers.place_trigger import AbstractTrigger, PlaceTrigger
 class DownloadPlace(Task):
     """Concrete task to download entities (restaurants) from place. """
 
-    _name = 'download.place.ready.task'
+    _name = 'download:place:ready:task'
 
     _place = None
     """Place data to be scrapped. """
@@ -42,10 +44,14 @@ class DownloadPlace(Task):
         """
         for download in downloads:
             url = self._generate_restaurants_url(download)
+            storage_file = Container().data_path() + '/' + Guid.generate()
 
             kwargs = {
                 'endpoint': download['name'].lower(),
                 'extractor_name': 'restaurants',
+                'storage': storage_file,
+                'endpoint_id': download['endpoint_id'],
+                'city_id': download['city_id'],
             }
 
             Launcher.start_crawler([url], **kwargs)
@@ -57,7 +63,7 @@ class DownloadPlace(Task):
         :param data:
         :return:
         """
-        url = '{}Restaurants-{}-{}.html'.format(
+        url = '{}/Restaurants-{}-{}.html'.format(
             data['url'],
             data['endpoint_code'],
             data['endpoint_name'],

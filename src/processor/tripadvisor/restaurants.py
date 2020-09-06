@@ -17,14 +17,19 @@ class Restaurants(AbstractProcessor):
         """
         restaurants = response.selector.css('div._1llCuDZj')
 
-        out = [{
-            'name': Restaurants.get_name(restaurant),
-            'address': None,
-            'postal_code': None,
-            'stars': Restaurants.get_stars(restaurant),
-            'url': Restaurants.get_url(restaurant),
-            'ranking': None,
-        } for restaurant in restaurants]
+        out = []
+        for restaurant in restaurants:
+            try:
+                out.append({
+                    'name': Restaurants.get_name(restaurant),
+                    'address': None,
+                    'postal_code': None,
+                    'stars': Restaurants.get_stars(restaurant),
+                    'url': Restaurants.get_url(restaurant),
+                    'ranking': None,
+                })
+            except Exception as exception:
+                continue
 
         return out
 

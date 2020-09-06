@@ -63,6 +63,15 @@ class Reviews(AbstractProcessor):
         return review.css('div.entry > p::text').get()
 
     @staticmethod
+    def get_stars(review) -> str:
+        """Returns the raw content from review.
+
+        :param review:
+        :return:
+        """
+        return review.css('div.entry > p::text').get()
+
+    @staticmethod
     def get_next_page_url(response):
         """If exists more pages with restaurants, then returns it.
 

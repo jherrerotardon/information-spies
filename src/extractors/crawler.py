@@ -27,7 +27,7 @@ class Launcher:
         extractor = ExtractorFactory.get_class(**kwargs)
 
         process = CrawlerProcess(get_project_settings())
-        process.crawl(extractor, urls)
+        process.crawl(extractor, urls, **kwargs)
         process.start()
 
 
@@ -43,8 +43,8 @@ class Crawler(Spider):
     """List where temporal save extraction data while
     crawler is running."""
 
-    _max_items = 0
-    """Secure flag to limit number of items to try extract. """
+    _batch = 100
+    """Number of items to keep in memory before be stored. """
 
     _page = 0
     """Counter for crawlers with some pages to need visit. """
@@ -55,10 +55,11 @@ class Crawler(Spider):
     _processor = None
     """Specific processor to extract info from raw data. """
 
-    def __init__(self, urls: list):
+    def __init__(self, urls: list, **kwargs):
         super(Crawler, self).__init__()
 
         self._urls += urls
+        self._storage = kwargs.get('storage', self._storage)
 
         self.logger.setLevel(INFO)
         getLogger('scrapy').setLevel(INFO)
@@ -78,9 +79,23 @@ class Crawler(Spider):
 
         self.logger.debug('Item extracted => {:d}.'.format(len(self._items)))
 
-    def engine_stopped(self):
+        if len(self._items) >= self._batch:
+            self._storage_items()
+
+    def _storage_items(self):
+        """Storage and release memory.
+
+        Save in secure storage items scrapped and
+        release self._items list.
+        By default, items will be storage in self._storage.
+
+        :return:
+        """
         with open((Container()).data_path() + '/' + self._storage, 'w') as file:
             pickle.dump(self._items, file=file)
+
+    def engine_stopped(self):
+        self._storage_items()
 
     def start_requests(self):
         # Do something with urls if is necessary.

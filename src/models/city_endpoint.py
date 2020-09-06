@@ -34,7 +34,14 @@ class CityEndpoint(MySQLModel):
         :param city_id:
         :return:
         """
-        columns = [self._table + '.' + sufix for sufix in [Column.ENDPOINT_CODE.value, Column.ENDPOINT_NAME.value]]
+        columns = [
+            Column.ENDPOINT_ID.value,
+            Column.CITY_ID.value,
+            Column.ENDPOINT_CODE.value,
+            Column.ENDPOINT_NAME.value,
+        ]
+        columns = [self._table + '.' + sufix for sufix in columns]
+
         foreign_columns = ['endpoint.url', 'endpoint.name']
 
         command = 'SELECT {} FROM {} LEFT JOIN {} ON city_endpoint.{}=endpoint.id WHERE {}=%s AND {}=1'.format(
@@ -46,15 +53,20 @@ class CityEndpoint(MySQLModel):
             'endpoint.enabled'
         )
 
-        cursor = self.execute(command, (city_id, ))
+        cursor = self.execute(command, (city_id,))
 
         result = []
         for data in cursor:
-            result.append({
-                'endpoint_code': data[0],
-                'endpoint_name': data[1],
-                'url': data[2],
-                'name': data[3],
-            })
+            keys = [
+                'endpoint_id',
+                'city_id',
+                'endpoint_code',
+                'endpoint_name',
+                'url',
+                'name',
+            ]
+
+            formatted = {key: value for key, value in zip(keys, data)}
+            result.append(formatted)
 
         return result

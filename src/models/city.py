@@ -30,9 +30,18 @@ class City(MySQLModel):
         self._use_db()
 
     def get_city(self, id_: int):
-        command = 'SELECT {} FROM {} WHERE {}=%s LIMIT 1'.format(', '.join(self._columns), self._table, Column.ID.value)
+        """Find the city with citi ID equals id_.
 
-        result = self.select_one(command, [id_])
+        :param id_:
+        :return:
+        """
+        sql = 'SELECT {} FROM {} WHERE {}=%s LIMIT 1'.format(
+            ', '.join(self._columns),
+            self._table,
+            Column.ID.value
+        )
+
+        result = self.select_one(sql, [id_])
 
         return {key: value for key, value in zip(self._columns, result)} if result else {}
 
