@@ -9,10 +9,12 @@ class Event(Enum):
     # Actions.
     PLACE_DOWNLOAD_ACTION = "download.place.ready.action"
     INFO_DOWNLOAD_ACTION = "download.info.ready.action"
+    RECOMMENDATION_DOWNLOAD_ACTION = "recommendation.ready.action"
 
     # Tasks.
     PLACE_DOWNLOAD_TASK = "download.place.ready.task"
     INFO_DOWNLOAD_TASK = "download.info.ready.task"
+    RECOMMENDATION_DOWNLOAD_TASK = "recommendation.ready.task"
 
 
 class BaseFire(Command):

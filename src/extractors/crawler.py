@@ -1,9 +1,34 @@
+"""Module to implements Crawlers. """
+
 import pickle
 from logging import getLogger, INFO
 
 from pyframework.components.validators import URLValidator
 from pyframework.container import Container
 from scrapy import Spider, Request, signals
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+
+from .factory import Factory as ExtractorFactory
+from ..processor.factory import Factory as ProcessorFactory
+
+
+class Launcher:
+    """Class to launch crawlers dynamically. """
+
+    @staticmethod
+    def start_crawler(urls: list, **kwargs):
+        """Instance and launches an extractor.
+
+        :param urls:
+        :param kwargs:
+        :return:
+        """
+        extractor = ExtractorFactory.get_class(**kwargs)
+
+        process = CrawlerProcess(get_project_settings())
+        process.crawl(extractor, urls)
+        process.start()
 
 
 class Crawler(Spider):
@@ -27,6 +52,9 @@ class Crawler(Spider):
     _save_evidences = False
     """Flag to storage raw extracted evidences."""
 
+    _processor = None
+    """Specific processor to extract info from raw data. """
+
     def __init__(self, urls: list):
         super(Crawler, self).__init__()
 
@@ -34,6 +62,16 @@ class Crawler(Spider):
 
         self.logger.setLevel(INFO)
         getLogger('scrapy').setLevel(INFO)
+
+        self._instance_processor()
+
+    def _instance_processor(self):
+        # Instance processor
+        current_module = self.__module__.split('.')
+        self._processor = ProcessorFactory.get_class(**{
+            'endpoint': current_module[-2],
+            'extractor_name': current_module[-1]
+        })
 
     def item_scraped(self, item):
         self._items.append(item)
@@ -53,13 +91,12 @@ class Crawler(Spider):
 
             yield Request(url=url, callback=self.parse)
 
-    def parse(self, response):
+    def parse(self, response, **kwargs):
         if self._save_evidences:
             self._storage_evidence(response.text)
 
     def _storage_evidence(self, content):
-        path = '{}/{}_{}.html'.format((Container()
-                                       ).data_path(), self.name, self._page)
+        path = '{}/{}_{}.html'.format((Container()).data_path(), self.name, self._page)
 
         with open(path, 'wb') as file:
             file.write(content)

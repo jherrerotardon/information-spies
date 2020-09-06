@@ -1,7 +1,9 @@
 from pyframework.commands.task import Task
 from pyframework.exceptions.custom_exceptions import InvalidDataException
 
+from ...extractors.crawler import Launcher
 from ...models.city import City
+from ...models.city_endpoint import CityEndpoint
 from ...triggers.place_trigger import AbstractTrigger, PlaceTrigger
 
 
@@ -26,12 +28,42 @@ class DownloadPlace(Task):
     def run(self):
         super(DownloadPlace, self).run()
 
-        url = self._generate_place_url()
+        downloads = CityEndpoint().get_downloads(self._place['id'])
 
-    def _generate_place_url(self) -> str:
-        code = self._place['code']
+        self.download_restaurants(downloads)
 
-        return ''
+        return self.RETURN_SUCCESS
+
+    def download_restaurants(self, downloads: list):
+        """Downloads restaurants using downloads configurations received.
+
+        :param downloads:
+        :return:
+        """
+        for download in downloads:
+            url = self._generate_restaurants_url(download)
+
+            kwargs = {
+                'endpoint': download['name'].lower(),
+                'extractor_name': 'restaurants',
+            }
+
+            Launcher.start_crawler([url], **kwargs)
+
+    @staticmethod
+    def _generate_restaurants_url(data: dict) -> str:
+        """Generates URL to download restaurants.
+
+        :param data:
+        :return:
+        """
+        url = '{}Restaurants-{}-{}.html'.format(
+            data['url'],
+            data['endpoint_code'],
+            data['endpoint_name'],
+        )
+
+        return url
 
     def _get_trigger(self) -> AbstractTrigger:
         return PlaceTrigger()

@@ -13,12 +13,12 @@ from pyframework.helpers.configuration import env
 connections = {
     'rabbitMQ': {
         # Hosts With Random Load Balancing
-        'hosts': env('RABBITMQ_HOSTS', '10.10.10.24:5672').split(','),
+        'hosts': env('RABBITMQ_HOSTS', 'localhost:5672').split(','),
         'vhost': env('RABBITMQ_VHOST', '/local'),
         'exchange': env('RABBITMQ_EXCHANGE', 'events'),
         'username': env('RABBITMQ_USER', 'guest'),
         'password': env('RABBITMQ_PASS', 'guest'),
-        'read_timeout': 10,
+        'read_timeout': 20,
         'write_timeout': 10,
         'connect_timeout': 5,
         'prefetchCount': 1,
