@@ -8,12 +8,12 @@ from pyframework.providers.rabbitmq.amqp_queue import AMQPQueue
 class Event(Enum):
     # Actions.
     PLACE_DOWNLOAD_ACTION = "download.place.ready.action"
-    ENTITY_DOWNLOAD_ACTION = "download.info.ready.action"
+    RESTAURANTS_INFO_DOWNLOAD_ACTION = "download.entity.ready.action"
     RECOMMENDATION_DOWNLOAD_ACTION = "recommendation.ready.action"
 
     # Tasks.
     PLACE_DOWNLOAD_TASK = "download.place.ready.task"
-    ENTITY_DOWNLOAD_TASK = "download.info.ready.task"
+    ENTITY_DOWNLOAD_TASK = "download.entity.ready.task"
     RECOMMENDATION_DOWNLOAD_TASK = "recommendation.ready.task"
 
 

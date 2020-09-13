@@ -8,9 +8,14 @@ coverage = "*"
 pylint = "*"
 autopep8 = "*"
 python-githooks = "*"
+matplotlib = "*"
 
 [packages]
 Scrapy = "*"
+nltk = "*"
+tensorflow = "*"
+pandas = "*"
+seaborn = "*"
 py-framework = {git = "git+ssh://git@github.com/jherrerotardon/py-framework.git"}
 
 [requires]

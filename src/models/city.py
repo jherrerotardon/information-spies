@@ -1,13 +1,13 @@
+from enum import Enum
 from pathlib import Path
 
 from pyframework.container import Container
 from pyframework.models.mysql_model import MySQLModel
 
-from enum import Enum
-
 
 class Column(Enum):
     """Columns of table. """
+
     ID = 'id'
     NAME = 'name'
     CODE = 'code'
