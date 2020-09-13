@@ -37,8 +37,8 @@ class Restaurants(Crawler):
         super(Restaurants, self).parse(response)
 
         # Extract reviews from current page.
-        for restaurants in self._processor.get_restaurants(response):
-            yield restaurants
+        for restaurant in self._processor.get_restaurants(response):
+            yield restaurant
 
         if next_page := self._processor.get_next_page_url(response):
             yield Request(url=response.urljoin(next_page), callback=self.parse)

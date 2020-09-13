@@ -71,8 +71,6 @@ class DownloadEntity(Task):
             self._entity['url'],
         )
 
-        url = 'https://www.tripadvisor.es/Restaurant_Review-g187493-d12952582-Reviews-or10-Sibuya_Urban_Sushi_Bar_Salamanca-Salamanca_Province_of_Salamanca_Castile_a.html'
-
         return url
 
     def _get_trigger(self) -> AbstractTrigger:

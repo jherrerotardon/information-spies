@@ -13,6 +13,7 @@ matplotlib = "*"
 [packages]
 Scrapy = "*"
 nltk = "*"
+textblob = "*"
 tensorflow = "*"
 pandas = "*"
 seaborn = "*"

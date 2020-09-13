@@ -3,9 +3,9 @@ import csv
 import gzip
 import re
 from io import StringIO
+import string
 
 import nltk
-import pandas as pd
 from nltk.classify import NaiveBayesClassifier
 from nltk.classify.util import accuracy
 from nltk.tokenize import RegexpTokenizer
@@ -30,8 +30,18 @@ stopwords_list = set(stopwords.words('english'))
 
 
 def tokenize_clean_text(text) -> list:
+    """Clean text and tokenize it.
+
+    Remove @ from tweets, rare characters, remove stopwords, etc.
+
+    :param text:
+    :return:
+    """
     text = re.sub(r"https?\S+", "", text)
     text = re.sub(r"@\S+", "", text)
+    text = re.sub('\[.*?¿\]\%', ' ', text)
+    text = re.sub('[%s]' % re.escape(string.punctuation), ' ', text)
+    text = re.sub('\w*\d\w*', '', text)
 
     text = text.lower()
 
@@ -43,15 +53,20 @@ def tokenize_clean_text(text) -> list:
 
 
 def word_feats(words):
+    """Tokenize
+
+    :param words:
+    :return:
+    """
     return dict([(word, True) for word in words])
 
 
 class SentimentalAnalyser:
     """Naive-Bayes sentiment analyzer. """
 
-    NEGATIVE = 'negative'
-    POSITIVE = 'positive'
-    NEUTRAL = 'neutral'
+    NEGATIVE = '0'
+    POSITIVE = '4'
+    NEUTRAL = '2'
     UNKNOWN = 'unk'
     """Possible sentiments."""
 
@@ -60,14 +75,20 @@ class SentimentalAnalyser:
     _classifier = None
 
     def train(self):
-        percentage_to_train = 0.85
-        headers = []
-        train_data = []
+        """Trains new sentimental analyzer model.
 
-        neg_feats = [(word_feats(tokenize_clean_text(tweet[headers.index('text')])), self.NEGATIVE)
-                     for tweet in train_data if tweet[headers.index('airline_sentiment')] == self.NEGATIVE]
-        pos_feats = [(word_feats(tokenize_clean_text(tweet[headers.index('text')])), self.POSITIVE) for tweet in
-                     train_data if tweet[headers.index('airline_sentiment')] == self.POSITIVE]
+        :return:
+        """
+        data = self._get_train_data()
+
+        percentage_to_train = 0.85
+
+        neg_feats = [(word_feats(tokenize_clean_text(tweet[1])), self.NEGATIVE)
+                     for tweet in data if tweet[0] == self.NEGATIVE]
+        pos_feats = [(word_feats(tokenize_clean_text(tweet[1])), self.POSITIVE)
+                     for tweet in data if tweet[0] == self.POSITIVE]
+
+        del data
 
         neg_cutoff = round(len(neg_feats) * percentage_to_train)
         pos_cutoff = round(len(pos_feats) * percentage_to_train)
@@ -77,40 +98,26 @@ class SentimentalAnalyser:
 
         # Train Classifier.
         print('train on %d instances, test on %d instances' % (len(train_feats), len(test_feats)))
-        classifier = NaiveBayesClassifier.train(train_feats)
-        print('accuracy: ', accuracy(classifier, test_feats))
+        self._classifier = NaiveBayesClassifier.train(train_feats)
+        print('accuracy: ', accuracy(self._classifier, test_feats))
 
         # Get data to test.
-        headers, tweets_for_test = [], []
-        test_data = [(word_feats(tokenize_clean_text(tweet[headers.index('text')])), self.UNKNOWN) for tweet in
-                     tweets_for_test]
-        result = self.test_classifier(classifier, tweets_for_test)
+        result = self.test_classifier(self._classifier, tweets_for_test)
 
         print('There are ' + str(result[self.NEGATIVE]) + ' negatives tweets.')
         print('There are ' + str(result[self.POSITIVE]) + ' positives tweets.')
 
-        classifier.show_most_informative_features()
+        self._classifier.show_most_informative_features()
 
-    def test_classifier(self, classifier_, tweets):
-        result_ = {
-            self.POSITIVE: 0,
-            self.NEUTRAL: 0,
-            self.NEGATIVE: 0,
-        }
+    def classify(self, texts: list):
+        """Classify the list of texts in positive or negative sentiment.
 
-        headers = []
+        :param texts:
+        :return:
+        """
+        result = [self._classifier.classify(word_feats(tokenize_clean_text(text))) for text in texts]
 
-        with open('/result.csv', mode='w') as file:
-            writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-            for tweet in tweets:
-                corpus = word_feats(tokenize_clean_text(tweet[headers.index('text')]))
-                sentiment = classifier_.classify(corpus)
-                result_[sentiment] += 1
-
-                writer.writerow([tweet[headers.index('text')], sentiment])
-
-        return result_
+        return result
 
     def _get_train_data(self) -> list:
         """Returns a list with text and sentiments to train process.

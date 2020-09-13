@@ -80,13 +80,14 @@ class Restaurant(MySQLModel):
         :param restaurant:
         :return:
         """
-        sql = 'SELECT {} FROM {} WHERE {}=%s LIMIT 1'.format(
+        sql = 'SELECT {} FROM {} WHERE {}=%s AND {}=%s LIMIT 1'.format(
             Column.ID.value,
             self._table,
-            Column.NAME.value
+            Column.NAME.value,
+            Column.CITY.value
         )
 
-        restaurant_stored = self.select_one(sql, (restaurant['name'],))
+        restaurant_stored = self.select_one(sql, (restaurant[Column.NAME.value], restaurant[Column.CITY.value]))
 
         if restaurant_stored:
             restaurant_id = restaurant_stored[0]  # Get ID.
