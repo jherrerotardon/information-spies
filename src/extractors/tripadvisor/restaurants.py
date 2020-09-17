@@ -1,3 +1,5 @@
+"""Crawler to get all restaurants from a city. """
+
 from scrapy import Request
 
 from ..crawler import Crawler
@@ -6,9 +8,11 @@ from pyframework.exceptions.custom_exceptions import ArgumentException
 
 
 class Restaurants(Crawler):
+    """Crawler to get all restaurants from a city. """
+
     name = 'TripadvisorReviews'
 
-    _storage = 'reviews.pickle'
+    _storage = 'restaurants.pickle'
 
     _city_id = None
     """City ID ID where data will be scrapped. """
@@ -33,8 +37,8 @@ class Restaurants(Crawler):
         super(Restaurants, self).parse(response)
 
         # Extract reviews from current page.
-        for restaurants in self._processor.get_restaurants(response):
-            yield restaurants
+        for restaurant in self._processor.get_restaurants(response):
+            yield restaurant
 
         if next_page := self._processor.get_next_page_url(response):
             yield Request(url=response.urljoin(next_page), callback=self.parse)

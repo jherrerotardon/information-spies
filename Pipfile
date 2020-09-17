@@ -11,6 +11,14 @@ python-githooks = "*"
 
 [packages]
 Scrapy = "*"
+nltk = "*"
+wordcloud = "*"
+googletrans = "*"
+tensorflow = "*"
+pyyaml = "*"
+h5py = "*"
+pandas = "*"
+matplotlib = "*"
 py-framework = {git = "git+ssh://git@github.com/jherrerotardon/py-framework.git"}
 
 [requires]
