@@ -43,5 +43,17 @@ params = {
                 'download.entity.ready.task',
             ],
         },
+
+        # |--------------------------------------------------------------------------
+        # | Recommendation queue
+        # |--------------------------------------------------------------------------
+        # | Queue to managements crawler tasks.
+        #
+        'recommendation_ready': {
+            'eventsNames': [
+                'recommendation.ready.action',
+                'recommendation.ready.task',
+            ],
+        },
     }
 }

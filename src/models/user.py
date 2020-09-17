@@ -25,7 +25,12 @@ class User(MySQLModel):
 
     _database = 'tourism'
 
-    _table = 'restaurant'
+    _table = 'user'
+
+    def __init__(self):
+        super(User, self).__init__()
+
+        self._use_db()
 
     def get_user(self, id_: int) -> dict:
         """Find the user with restaurant ID equals id_.

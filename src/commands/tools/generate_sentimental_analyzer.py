@@ -9,6 +9,9 @@ class GenerateSentimentalAnalyzer(Command):
     _description = "Command to do generate model for analyzer sentient."
 
     def handle(self) -> int:
-        SentimentalAnalyser().train()
+        analyzer = SentimentalAnalyser()
+
+        # analyzer.train()
+        # analyzer.storage_model()
 
         return self.RETURN_SUCCESS

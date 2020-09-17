@@ -8,15 +8,17 @@ coverage = "*"
 pylint = "*"
 autopep8 = "*"
 python-githooks = "*"
-matplotlib = "*"
 
 [packages]
 Scrapy = "*"
 nltk = "*"
-textblob = "*"
+wordcloud = "*"
+googletrans = "*"
 tensorflow = "*"
+pyyaml = "*"
+h5py = "*"
 pandas = "*"
-seaborn = "*"
+matplotlib = "*"
 py-framework = {git = "git+ssh://git@github.com/jherrerotardon/py-framework.git"}
 
 [requires]

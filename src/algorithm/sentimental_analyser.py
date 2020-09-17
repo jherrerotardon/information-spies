@@ -1,9 +1,11 @@
 """Module to analyze sentiments from Restaurants of City. """
 import csv
 import gzip
+import pickle
 import re
-from io import StringIO
 import string
+from io import StringIO
+from pathlib import Path
 
 import nltk
 from nltk.classify import NaiveBayesClassifier
@@ -53,7 +55,7 @@ def tokenize_clean_text(text) -> list:
 
 
 def word_feats(words):
-    """Tokenize
+    """Creates the matrix of words.
 
     :param words:
     :return:
@@ -72,7 +74,13 @@ class SentimentalAnalyser:
 
     DATASET_FILE = 'sentimental_dataset.gz'
 
+    MODEL_FILE = 'sentimental_analyser.pickle'
+
     _classifier = None
+    """Sentimental classifier model. """
+
+    def __init__(self):
+        self._load_model()
 
     def train(self):
         """Trains new sentimental analyzer model.
@@ -81,7 +89,7 @@ class SentimentalAnalyser:
         """
         data = self._get_train_data()
 
-        percentage_to_train = 0.85
+        percentage_to_train = 0.9
 
         neg_feats = [(word_feats(tokenize_clean_text(tweet[1])), self.NEGATIVE)
                      for tweet in data if tweet[0] == self.NEGATIVE]
@@ -101,21 +109,16 @@ class SentimentalAnalyser:
         self._classifier = NaiveBayesClassifier.train(train_feats)
         print('accuracy: ', accuracy(self._classifier, test_feats))
 
-        # Get data to test.
-        result = self.test_classifier(self._classifier, tweets_for_test)
-
-        print('There are ' + str(result[self.NEGATIVE]) + ' negatives tweets.')
-        print('There are ' + str(result[self.POSITIVE]) + ' positives tweets.')
-
         self._classifier.show_most_informative_features()
 
-    def classify(self, texts: list):
+    def classify(self, text: str):
         """Classify the list of texts in positive or negative sentiment.
 
-        :param texts:
+        :param text:
         :return:
         """
-        result = [self._classifier.classify(word_feats(tokenize_clean_text(text))) for text in texts]
+
+        result = self._classifier.classify(word_feats(tokenize_clean_text(text)))
 
         return result
 
@@ -137,3 +140,34 @@ class SentimentalAnalyser:
         :return:
         """
         return Container().data_path() + '/' + self.DATASET_FILE
+
+    def _load_model(self):
+        """Tries to load model from storage. If not exists, train new
+        and stored it.
+
+        :return:
+        """
+        model_storage = self._get_model_storage()
+
+        if model_storage.is_file():
+            self._classifier = pickle.load(open(str(model_storage), "rb"))
+        else:
+            self.train()
+            self.storage_model()
+
+    def storage_model(self):
+        """Storage model in storage dir.
+
+        :return:
+        """
+        model_storage = self._get_model_storage()
+
+        pickle.dump(self._classifier, open(str(model_storage), "wb"))
+
+    def _get_model_storage(self):
+        """Returns file path where model should be stored.
+
+        :return:
+        """
+        return Path(Container().storage_path() + '/models/' + self.MODEL_FILE)
+
