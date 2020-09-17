@@ -1,53 +1,77 @@
 from pyframework.commands.task import Task
+from pyframework.components.guid import Guid
+from pyframework.container import Container
 from pyframework.exceptions.custom_exceptions import InvalidDataException
 
-from ...models.city import City
-from ...triggers.place_trigger import AbstractTrigger, PlaceTrigger
+from ...extractors.crawler import Launcher
+from ...models.endpoint import Endpoint
+from ...models.restaurant import Restaurant
+from ...triggers.entity_info_trigger import AbstractTrigger, EntityInfoTrigger
 
 
 class DownloadEntity(Task):
     """Concrete task to download entities (restaurants) from place. """
 
-    _name = 'download:place:ready:task'
+    _name = 'download:entity:ready:task'
 
-    _place = None
-    """Place data to be scrapped. """
+    _endpoint = None
+    """Endpoint data to be scrapped. """
+
+    _entity = None
+    """Entity data to be scrapped. """
 
     def set_up(self):
         super(DownloadEntity, self).set_up()
 
-        place_id = self._payload.get('place_id')
-        if place_id:
-            self._place = City().get_city(place_id)
+        endpoint_id = self._payload.get('endpoint_id')
+        if endpoint_id:
+            self._endpoint = Endpoint().get_endpoint(endpoint_id)
 
-        if not self._place:
-            raise InvalidDataException('Empty place. Nothing to download.')
+        if not self._endpoint:
+            raise InvalidDataException('Empty endpoint. Nothing to download.')
+
+        entity_id = self._payload.get('entity_id')
+        if entity_id:
+            self._entity = Restaurant().get_restaurant(entity_id)
+
+        if not self._entity:
+            raise InvalidDataException('Empty entity. Nothing to download.')
 
     def run(self):
         super(DownloadEntity, self).run()
 
-        self.download_reviews({})
+        self.download_reviews()
 
         return self.RETURN_SUCCESS
 
-    def download_reviews(self, data: dict):
-        """Downloads reviews using downloads configurations received.
+    def download_reviews(self):
+        """Downloads reviews and hotel info from entity loaded.
 
-        :param data:
         :return:
         """
-        pass
+        url = self._generate_restaurant_url()
+        storage_file = Container().data_path() + '/' + Guid.generate()
 
-    @staticmethod
-    def _generate_restaurant_url(data: dict) -> str:
-        """Generates URL to download restaurants.
+        kwargs = {
+            'endpoint': self._endpoint['name'].lower(),
+            'extractor_name': 'entity',
+            'storage': storage_file,
+            'entity_id': self._entity['id'],
+        }
 
-        :param data:
+        Launcher.start_crawler([url], **kwargs)
+
+    def _generate_restaurant_url(self) -> str:
+        """Generates URL to download restaurant info.
+
         :return:
         """
-        url = ''
+        url = '{}{}'.format(
+            self._endpoint['url'],
+            self._entity['url'],
+        )
 
         return url
 
     def _get_trigger(self) -> AbstractTrigger:
-        return PlaceTrigger()
+        return EntityInfoTrigger()

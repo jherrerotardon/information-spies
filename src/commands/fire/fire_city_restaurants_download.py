@@ -4,7 +4,7 @@ from .base_fire import BaseFire, Event
 from ...models.city import City
 
 
-class FireCityDownload(BaseFire):
+class FireCityRestaurantsDownload(BaseFire):
     _name = 'fire:cityDownload'
 
     _description = 'Launch an event to download entities info from city.'

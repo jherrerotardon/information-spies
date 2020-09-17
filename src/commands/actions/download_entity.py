@@ -1,32 +1,37 @@
 from pyframework.commands.action import Action
 from pyframework.exceptions.custom_exceptions import ArgumentException
 
-from ...triggers.place_trigger import AbstractTrigger, PlaceTrigger
+from ...triggers.entity_info_trigger import EntityInfoTrigger, AbstractTrigger
 
 
 class DownloadEntity(Action):
     """Concrete action to download entities (restaurants) from place. """
 
-    _name = 'download.place.ready.action'
+    _name = 'download.info.ready.action'
 
-    _entity_id = None
-    """Place id to be scrapped. """
+    _entities_ids = []
+    """Entities ids to be scrapped. """
+
+    _endpoint_id = int
+    """Endpoint to be downloaded. """
 
     def set_up(self):
         super(DownloadEntity, self).set_up()
 
-        self._entity_id = self._payload.get('entoty_id')
-        if not self._entity_id:
-            raise ArgumentException("No city to be scrapped.")
+        if 'endpoint_id' not in self._payload:
+            raise ArgumentException('Endpoint ID is required.')
+
+        self._entities_ids = self._payload.get('restaurants_ids', [])
 
     def _generate_tasks(self) -> list:
-        task = {
-            'id': '0',  # Unique task. Is not important.
+        tasks = [{
+            'id': entity_id,
             'guid': self._guid,
-            'entity_id': self._entity_id,
-        }
+            'entity_id': entity_id,
+            'endpoint_id': self._payload['endpoint_id'],
+        } for entity_id in self._entities_ids]
 
-        return [task]
+        return tasks
 
     def _get_trigger(self) -> AbstractTrigger:
-        return PlaceTrigger()
+        return EntityInfoTrigger()

@@ -22,6 +22,7 @@ connections = {
         'write_timeout': 10,
         'connect_timeout': 5,
         'prefetchCount': 1,
+        'heartbeat': 30 * 60,  # 30 minutes.
     }
 }
 
@@ -37,9 +38,21 @@ params = {
         'download_ready': {
             'eventsNames': [
                 'download.place.ready.action',
-                'download.info.ready.action',
+                'download.entity.ready.action',
                 'download.place.ready.task',
-                'download.info.ready.task',
+                'download.entity.ready.task',
+            ],
+        },
+
+        # |--------------------------------------------------------------------------
+        # | Recommendation queue
+        # |--------------------------------------------------------------------------
+        # | Queue to managements crawler tasks.
+        #
+        'recommendation_ready': {
+            'eventsNames': [
+                'recommendation.ready.action',
+                'recommendation.ready.task',
             ],
         },
     }

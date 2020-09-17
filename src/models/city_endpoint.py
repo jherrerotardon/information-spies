@@ -1,13 +1,11 @@
-from pathlib import Path
-
-from pyframework.container import Container
-from pyframework.models.mysql_model import MySQLModel
-
 from enum import Enum
+
+from pyframework.models.mysql_model import MySQLModel
 
 
 class Column(Enum):
     """Columns of table. """
+
     CITY_ID = 'city_id'
     ENDPOINT_ID = 'endpoint_id'
     ENDPOINT_CODE = 'endpoint_code'
